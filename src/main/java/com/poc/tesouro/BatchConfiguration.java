@@ -58,7 +58,7 @@ public class BatchConfiguration {
                 .build();
     }
 
-    @Bean
+    @Bean(name="job1")
     public Job importUserJob(JobCompletionNotificationListener listener, Step step1) {
         return jobBuilderFactory.get("importUserJob")
                 .incrementer(new RunIdIncrementer())
