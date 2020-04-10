@@ -1,6 +1,5 @@
 package com.poc.tesouro;
 
-import com.poc.tesouro.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
@@ -18,20 +17,24 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-        public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
+    public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void afterJob(JobExecution jobExecution) {
         if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-            log.info("!!! JOB FINISHED! Time to verify the results");
+            log.info("################################################## JOB FINISHED! ##################################################");
 
-            jdbcTemplate.query("SELECT name, description FROM user",
+            /*
+            jdbcTemplate.query("SELECT nome, data, porcentagem FROM user",
                     (rs, row) -> new User(
                             rs.getString(1),
-                            rs.getString(2))
-            ).forEach(user -> log.info("Found <" + user.getName().toUpperCase() + " " + user.getDescription().toUpperCase() + "> in the database."));
+                            rs.getString(2),
+                            rs.getLong(3))
+            ).forEach(user -> log.info("ENCONTRATO <<<<<< " + user.getNome().toUpperCase() + " " + user.getData().toUpperCase() + "  " + user.getPorcentagem().toString() + " >>>>>> NO BANCO DE DADOS."));
+            */
         }
+
     }
 }

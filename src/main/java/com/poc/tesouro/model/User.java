@@ -1,7 +1,5 @@
 package com.poc.tesouro.model;
 
-import lombok.NonNull;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -10,20 +8,23 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     @Id
-    //@Column(name = "id", nullable = false, columnDefinition = "Long default 1")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    // If our entities use GenerationType.IDENTITY identifier generator, Hibernate will silently disable batch inserts/updates.
+    //Since entities in our examples use GenerationType.SEQUENCE identifier generator, Hibernate enables batch operations
 
-    private String name;
-    private String description;
 
-    public User(){
+    private String nome;
+    private String data;
+    private Long porcentagem;
 
+    public User() {
     }
 
-    public User(String name, String description) {
-        this.name = name;
-        this.description = description;
+    public User(String nome, String data, Long porcentagem) {
+        this.nome = nome;
+        this.data = data;
+        this.porcentagem = porcentagem;
     }
 
     public Long getId() {
@@ -34,27 +35,27 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getNome() {
+        return nome;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
-    public String getDescription() {
-        return description;
+    public String getData() {
+        return data;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setData(String data) {
+        this.data = data;
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                " name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+    public Long getPorcentagem() {
+        return porcentagem;
+    }
+
+    public void setPorcentagem(Long porcentagem) {
+        this.porcentagem = porcentagem;
     }
 }

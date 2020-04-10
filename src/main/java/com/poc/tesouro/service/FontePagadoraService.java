@@ -1,7 +1,7 @@
 package com.poc.tesouro.service;
 
-import com.poc.tesouro.model.User;
-import com.poc.tesouro.repository.UserRepository;
+import com.poc.tesouro.model.FontePagadora;
+import com.poc.tesouro.repository.FontePagadoraRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,42 +14,41 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class FontePagadoraService {
 
     @Autowired
-    UserRepository repository;
+    FontePagadoraRepository repository;
 
-    public List<User> getAllUsers() {
-        List<User> userList = repository.findAll();
+    public List<FontePagadora> getAllFontePagadoras() {
+        List<FontePagadora> userList = repository.findAll();
 
         if (userList.size() > 0) {
             return userList;
         } else {
-            return new ArrayList<User>();
+            return new ArrayList<FontePagadora>();
         }
     }
 
-    public ResponseEntity getUserById(Long id) throws Exception {
-        Optional<User> user = repository.findById(id);
+    public ResponseEntity getFontePagadoraById(Long id) throws Exception {
+        Optional<FontePagadora> user = repository.findById(id);
 
         if (user.isPresent()) {
             return user.map(record -> ResponseEntity.ok().body(record))
                     .orElse(ResponseEntity.notFound().build());
         } else {
-            throw new Exception("No user record exist for given id");
+            throw new Exception("FontePagadora não localizado!!");
+            //new ResponseEntity<>("FontePagadora não localizado!!!", HttpStatus.NOT_FOUND)
         }
     }
 
     @Retryable(maxAttempts = 5, backoff = @Backoff(delay = 100, maxDelay = 500)) //Retryable in Service
-    public ResponseEntity createOrUpdateUser(User entity) throws Exception {
-        Optional<User> user = repository.findById(entity.getId());
+    public ResponseEntity createOrUpdateFontePagadora(FontePagadora entity) throws Exception {
+        Optional<FontePagadora> user = repository.findById(entity.getId());
 
         if (user.isPresent()) {
-            User newEntity = user.get();
+            FontePagadora newEntity = user.get();
             newEntity.setNome(entity.getNome());
-            newEntity.setData(entity.getData());
-            newEntity.setPorcentagem(entity.getPorcentagem());
-
+            newEntity.setCnpj(entity.getCnpj());
             newEntity = repository.save(newEntity);
 
             return ResponseEntity.ok().build();
@@ -60,18 +59,18 @@ public class UserService {
         }
     }
 
-    public ResponseEntity<String> deleteUserById(Long id) throws Exception {
+    public ResponseEntity<String> deleteFontePagadoraById(Long id) throws Exception {
         ResponseEntity<String> user = repository.findById(id)
                 .map(record -> {
                     repository.deleteById(id);
-                    return new ResponseEntity<String>("Usuário deletado com sucesso!!!", HttpStatus.OK);
-                }).orElse(new ResponseEntity<>("Usuário não encontrado!!!", HttpStatus.NOT_FOUND));
+                    return new ResponseEntity<String>("FontePagadora deletado com sucesso!!!", HttpStatus.OK);
+                }).orElse(new ResponseEntity<>("FontePagadora não localizado!!!", HttpStatus.NOT_FOUND));
 
         if (user.getStatusCode().is2xxSuccessful()) {
             //repository.deleteById(id);
             new ResponseEntity<>("{}", HttpStatus.OK);
         } else {
-            new ResponseEntity<String>("Usuário não encontrado com id = ", HttpStatus.NOT_FOUND);
+            new ResponseEntity<String>("FontePagadora não encontrado com id = ", HttpStatus.NOT_FOUND);
         }
         return user;
     }
