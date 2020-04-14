@@ -49,8 +49,8 @@ public class ClienteService {
             Cliente newEntity = user.get();
             newEntity.setNome(entity.getNome());
             newEntity.setCpf(entity.getCpf());
-            newEntity.setCliente(entity.getCliente());
-            newEntity.setListaCoTitulares(entity.getListaCoTitulares());
+            //newEntity.setCliente(entity.getCliente());
+            //newEntity.setListaCoTitulares(entity.getListaCoTitulares());
 
             newEntity = repository.save(newEntity);
 

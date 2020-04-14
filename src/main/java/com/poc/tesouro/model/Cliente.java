@@ -21,10 +21,10 @@ public class Cliente implements Serializable {
 
     @OneToMany(mappedBy = "titular", targetEntity = SaldoOuRendimento.class, fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private Set<SaldoOuRendimento> cliente;
+    private Set<SaldoOuRendimento> saldosRendimentos;
 
-    @ManyToMany(mappedBy = "coTitulares")
-    private Set<SaldoOuRendimento> listaCoTitulares;
+    @ManyToMany(mappedBy = "coTitulares", fetch = FetchType.LAZY)
+    private Set<SaldoOuRendimento> saldosRendimentoCotitular;
 
     public Cliente() {
     }
@@ -53,19 +53,19 @@ public class Cliente implements Serializable {
         this.cpf = cpf;
     }
 
-    public Set<SaldoOuRendimento> getCliente() {
-        return cliente;
+    public Set<SaldoOuRendimento> getSaldosRendimentos() {
+        return saldosRendimentos;
     }
 
-    public void setCliente(Set<SaldoOuRendimento> cliente) {
-        this.cliente = cliente;
+    public void setSaldosRendimentos(Set<SaldoOuRendimento> saldosRendimentos) {
+        this.saldosRendimentos = saldosRendimentos;
     }
 
-    public Set<SaldoOuRendimento> getListaCoTitulares() {
-        return listaCoTitulares;
+    public Set<SaldoOuRendimento> getSaldosRendimentoCotitular() {
+        return saldosRendimentoCotitular;
     }
 
-    public void setListaCoTitulares(Set<SaldoOuRendimento> listaCoTitulares) {
-        this.listaCoTitulares = listaCoTitulares;
+    public void setSaldosRendimentoCotitular(Set<SaldoOuRendimento> saldosRendimentoCotitular) {
+        this.saldosRendimentoCotitular = saldosRendimentoCotitular;
     }
 }

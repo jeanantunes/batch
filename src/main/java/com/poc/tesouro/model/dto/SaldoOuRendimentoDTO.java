@@ -1,36 +1,20 @@
-package com.poc.tesouro.model;
+package com.poc.tesouro.model.dto;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-@Entity
-@Table(name = "saldoOuRendimento")
-public class SaldoOuRendimento implements Serializable {
+public class SaldoOuRendimentoDTO implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(
-            name = "fontepagadora_saldorendimento",
-            joinColumns = @JoinColumn(name = "id_saldoourendimento"),
-            inverseJoinColumns = @JoinColumn(name = "id_fontepagadora"))
-    private Set<FontePagadora> fontesPagadoras; //FK
+    private Set<FontePagadoraDTO> fontesPagadoras; //FK
 
-    @ManyToOne
-    private Cliente titular; //FK
+    private ClienteDTO titular = new ClienteDTO(); //FK
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(
-            name = "cotitulares",
-            joinColumns = @JoinColumn(name = "idsaldoourendimento"),
-            inverseJoinColumns = @JoinColumn(name = "idcotitular"))
-    private List<Cliente> coTitulares; //FK
+    private List<ClienteDTO> coTitulares; //FK
 
     private String nmConta; //Para NCC sempre fixo Conta corrente
 
@@ -42,7 +26,7 @@ public class SaldoOuRendimento implements Serializable {
     //(18,2)
     private Long vrSaldoAtual; // Vr = valor fim do ano base do informe PF
 
-    private Date dtApuracao; //Data de qual o dia refencia do legado foi extraido (a ver. final vai ser dia 31/12)
+    private LocalDateTime dtApuracao; //Data de qual o dia refencia do legado foi extraido (a ver. final vai ser dia 31/12)
 
     private String legadoOrigem; //texto livre pra identificar legado origem
 
@@ -50,11 +34,9 @@ public class SaldoOuRendimento implements Serializable {
 
     private String categoriaRendto; //para poder apresentar no bloco correspondente
 
-    //(18,2)
-    @Column(precision = 18, scale = 2)
     private BigDecimal vrRendto; //Valor do rendimento, NCC sempre null
 
-    public SaldoOuRendimento() {
+    public SaldoOuRendimentoDTO() {
     }
 
     public Long getId() {
@@ -65,11 +47,11 @@ public class SaldoOuRendimento implements Serializable {
         this.id = id;
     }
 
-    public Cliente getTitular() {
+    public ClienteDTO getTitular() {
         return titular;
     }
 
-    public void setTitular(Cliente titular) {
+    public void setTitular(ClienteDTO titular) {
         this.titular = titular;
     }
 
@@ -105,11 +87,11 @@ public class SaldoOuRendimento implements Serializable {
         this.vrSaldoAtual = vrSaldoAtual;
     }
 
-    public Date getDtApuracao() {
+    public LocalDateTime getDtApuracao() {
         return dtApuracao;
     }
 
-    public void setDtApuracao(Date dtApuracao) {
+    public void setDtApuracao(LocalDateTime dtApuracao) {
         this.dtApuracao = dtApuracao;
     }
 
@@ -137,19 +119,19 @@ public class SaldoOuRendimento implements Serializable {
         this.categoriaRendto = categoriaRendto;
     }
 
-    public Set<FontePagadora> getFontesPagadoras() {
+    public Set<FontePagadoraDTO> getFontesPagadoras() {
         return fontesPagadoras;
     }
 
-    public void setFontesPagadoras(Set<FontePagadora> fontesPagadoras) {
+    public void setFontesPagadoras(Set<FontePagadoraDTO> fontesPagadoras) {
         this.fontesPagadoras = fontesPagadoras;
     }
 
-    public List<Cliente> getCoTitulares() {
+    public List<ClienteDTO> getCoTitulares() {
         return coTitulares;
     }
 
-    public void setCoTitulares(List<Cliente> coTitulares) {
+    public void setCoTitulares(List<ClienteDTO> coTitulares) {
         this.coTitulares = coTitulares;
     }
 
