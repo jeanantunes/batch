@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "saldoOuRendimento")
@@ -15,12 +14,8 @@ public class SaldoOuRendimento implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(
-            name = "fontepagadora_saldorendimento",
-            joinColumns = @JoinColumn(name = "id_saldoourendimento"),
-            inverseJoinColumns = @JoinColumn(name = "id_fontepagadora"))
-    private Set<FontePagadora> fontesPagadoras; //FK
+    @ManyToOne(fetch = FetchType.EAGER)
+    private FontePagadora fontePagadora; //FK
 
     @ManyToOne
     private Cliente titular; //FK
@@ -137,12 +132,12 @@ public class SaldoOuRendimento implements Serializable {
         this.categoriaRendto = categoriaRendto;
     }
 
-    public Set<FontePagadora> getFontesPagadoras() {
-        return fontesPagadoras;
+    public FontePagadora getFontePagadora() {
+        return fontePagadora;
     }
 
-    public void setFontesPagadoras(Set<FontePagadora> fontesPagadoras) {
-        this.fontesPagadoras = fontesPagadoras;
+    public void setFontePagadora(FontePagadora fontePagadora) {
+        this.fontePagadora = fontePagadora;
     }
 
     public List<Cliente> getCoTitulares() {

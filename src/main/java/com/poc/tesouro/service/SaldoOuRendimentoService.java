@@ -51,7 +51,7 @@ public class SaldoOuRendimentoService {
             //newEntity.setClienteId(entity.getClienteId());
             //newEntity.setCoTitularesId(entity.getCoTitularesId());
 
-            newEntity.setFontesPagadoras(entity.getFontesPagadoras());
+            //newEntity.setFontesPagadoras(entity.getFontesPagadoras());
             newEntity.setTitular(entity.getTitular());
             newEntity.setCoTitulares(entity.getCoTitulares());
             newEntity.setNmConta(entity.getNmConta());

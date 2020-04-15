@@ -4,13 +4,18 @@ import com.poc.tesouro.model.Cliente;
 import com.poc.tesouro.model.FontePagadora;
 import com.poc.tesouro.model.SaldoOuRendimento;
 import com.poc.tesouro.model.User;
+import com.poc.tesouro.repository.SaldoOuRendimentoRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemReaderException;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.data.RepositoryItemWriter;
+import org.springframework.batch.item.data.builder.RepositoryItemWriterBuilder;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
@@ -63,21 +68,19 @@ public class BatchConfiguration {
                 .build();
     }
 
-    /*
+
     @Bean
-    public FlatFileItemReader<CoTitulares> readerCoTitulares() {
-        return new FlatFileItemReaderBuilder<CoTitulares>()
+    public FlatFileItemReader<SaldoOuRendimento> readerCoTitulares(CotitularFieldSetMapper cotitularFieldSetMapper) {
+        return new FlatFileItemReaderBuilder<SaldoOuRendimento>()
                 .name("coTitularesItemReader")
                 .resource(new ClassPathResource("coTitulares.csv"))
                 .delimited()
                 //.names(new String[]{"nomeDoCotitular", "cpf"})
                 .names(new String[]{"idsaldoourendimento", "idcotitular"})
-                .fieldSetMapper(new BeanWrapperFieldSetMapper<CoTitulares>() {{
-                    setTargetType(CoTitulares.class);
-                }})
+                .fieldSetMapper(cotitularFieldSetMapper)
                 .build();
     }
-    */
+
 
     @Bean
     public FlatFileItemReader<FontePagadora> readerFontePagadora() {
@@ -93,14 +96,14 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public FlatFileItemReader<SaldoOuRendimento> readerSaldoOuRendimento() {
+    public FlatFileItemReader<SaldoOuRendimento> readerSaldoOuRendimento(SaldoOuRendimentoFieldSetMapper saldoOuRendimentoFieldSetMapper) {
         return new FlatFileItemReaderBuilder<SaldoOuRendimento>()
                 .name("saldoOuRendimentoItemReader")
                 .resource(new ClassPathResource("saldoOuRendimento.csv"))
                 .delimited()
-                //.names(new String[]{"id", "categoriaRendto", "dtApuracao", "legadoOrigem", "nmConta", "numeroDaConta", "produto", "vrRendto", "vrSaldoAnterior", "vrSaldoAtual", "titular"})
-                .names(new String[]{"id", "categoriaRendto", "dtApuracao", "legadoOrigem", "nmConta", "numeroDaConta", "produto", "vrRendto", "vrSaldoAnterior", "vrSaldoAtual"})
-                .fieldSetMapper(new SaldoOuRendimentoFieldSetMapper())
+                .names(new String[]{"id", "categoriaRendto", "dtApuracao", "legadoOrigem", "nmConta", "numeroDaConta", "produto", "vrRendto", "vrSaldoAnterior", "vrSaldoAtual", "titular", "fontePagadora"})
+                //.names(new String[]{"id", "categoriaRendto", "dtApuracao", "legadoOrigem", "nmConta", "numeroDaConta", "produto", "vrRendto", "vrSaldoAnterior", "vrSaldoAtual"})
+                .fieldSetMapper(saldoOuRendimentoFieldSetMapper)
                 //.fieldSetMapper(new BeanWrapperFieldSetMapper<SaldoOuRendimento>() {{
                 //    setTargetType(SaldoOuRendimento.class);
                 //}})
@@ -172,20 +175,30 @@ public class BatchConfiguration {
                 .dataSource(dataSource)
                 .build();
     }
-
+    /*
     @Bean//SaldoOuRendimento
     public JdbcBatchItemWriter<SaldoOuRendimento> writerSaldoOuRendimento(DataSource dataSource) {
         return new JdbcBatchItemWriterBuilder<SaldoOuRendimento>()
                 .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
                 .sql("INSERT INTO saldo_ou_rendimento (id, nm_conta, numero_da_conta, vr_saldo_anterior, " +
-                        "vr_saldo_atual, dt_apuracao, legado_origem, produto, categoria_rendto, vr_rendto " + //, " +
-                        ") " +
-                        //"titular) " +
+                        "vr_saldo_atual, dt_apuracao, legado_origem, produto, categoria_rendto, vr_rendto, " +
+                        //") " +
+                        "titular_id) " +
                         "VALUES (:id, :nmConta, :numeroDaConta, :vrSaldoAnterior, " +
-                        ":vrSaldoAtual, :dtApuracao, :legadoOrigem, :produto, :categoriaRendto, :vrRendto " + //, " +
-                        ")")
-                //"(SELECT id FROM cliente WHERE cliente.id = :titular))")
+                        ":vrSaldoAtual, :dtApuracao, :legadoOrigem, :produto, :categoriaRendto, :vrRendto, " +
+                        //")")
+                        ":id)")
+                //.sql("INSERT INTO cotitulares (idsaldoourendimento, idcotitular) VALUES ((SELECT id FROM saldo_ou_rendimento WHERE saldo_ou_rendimento.id = :id), (SELECT id FROM cliente WHERE cliente.id = :id))")
                 .dataSource(dataSource)
+                .build();
+    }
+    */
+
+    @Bean//SaldoOuRendimento
+    public RepositoryItemWriter<SaldoOuRendimento> writerSaldoOuRendimento(SaldoOuRendimentoRepository rendimentoRepository) {
+        return new RepositoryItemWriterBuilder<SaldoOuRendimento>()
+                .methodName("save")
+                .repository(rendimentoRepository)
                 .build();
     }
 /*
@@ -200,7 +213,7 @@ public class BatchConfiguration {
 */
 
     @Bean(name = "job1")
-    public Job importUserJob(JobCompletionNotificationListener listener, Step step1, Step step2, Step step4, Step step5) {
+    public Job importUserJob(JobCompletionNotificationListener listener, Step step1, Step step2, Step step4, Step step5, Step step6) {
         return jobBuilderFactory.get("importUserAndClienteAndCoTitularesJob")
                 .incrementer(new RunIdIncrementer())
                 .listener(listener)
@@ -209,6 +222,7 @@ public class BatchConfiguration {
                 //.next(step3)
                 .next(step4)
                 .next(step5)
+                .next(step6)
                 .end()
                 .build();
     }
@@ -321,12 +335,35 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public Step step5(JdbcBatchItemWriter<SaldoOuRendimento> writerSaldoOuRendimento) {
+    public Step step5(ItemWriter<SaldoOuRendimento> writerSaldoOuRendimento, ItemReader<SaldoOuRendimento> readerSaldoOuRendimento) {
         return stepBuilderFactory.get("step5 - SALDO_OU_RENDIMENTO")
                 .allowStartIfComplete(true)
                 .<SaldoOuRendimento, SaldoOuRendimento>chunk(100)
-                .reader(readerSaldoOuRendimento())
+                .reader(readerSaldoOuRendimento)
                 .processor(processorSaldoOuRendimento())
+                .writer(writerSaldoOuRendimento)
+                .faultTolerant() //inicio Retry
+                .retryLimit(3) //Retry 3 vezes
+                .retry(FlatFileParseException.class)
+                .retry(DuplicateKeyException.class)
+                .retry(ItemReaderException.class)
+                .retry(NullPointerException.class)
+                //.retry(NonTransientResourceException.class)
+                //.retry(TimeoutException.class)
+                //.retry(Throwable.class)
+                //.retry(DeadlockLoserDataAccessException.class) //fim Retry
+                //.noRollback(ValidationException.class)
+                //.readerIsTransactionalQueue()
+                .build();
+    }
+
+    @Bean
+    public Step step6(ItemWriter<SaldoOuRendimento> writerSaldoOuRendimento, ItemReader<SaldoOuRendimento> readerCoTitulares) {
+        return stepBuilderFactory.get("step6 - CO_TITULARES_SALDO_OU_RENDIMENTO")
+                .allowStartIfComplete(true)
+                .<SaldoOuRendimento, SaldoOuRendimento>chunk(100)
+                .reader(readerCoTitulares)
+                //.processor(processorSaldoOuRendimento())
                 .writer(writerSaldoOuRendimento)
                 .faultTolerant() //inicio Retry
                 .retryLimit(3) //Retry 3 vezes

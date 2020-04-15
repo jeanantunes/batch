@@ -2,7 +2,7 @@ package com.poc.tesouro.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "fontePagadora")
@@ -15,8 +15,8 @@ public class FontePagadora implements Serializable {
     private String nome;
     private String cnpj;
 
-    @ManyToMany(mappedBy = "fontesPagadoras")
-    private Set<SaldoOuRendimento> saldos;
+    @OneToMany(mappedBy = "fontePagadora")
+    private List<SaldoOuRendimento> saldos;
 
     public FontePagadora() {
     }
@@ -45,11 +45,11 @@ public class FontePagadora implements Serializable {
         this.cnpj = cnpj;
     }
 
-    public Set<SaldoOuRendimento> getSaldos() {
+    public List<SaldoOuRendimento> getSaldos() {
         return saldos;
     }
 
-    public void setSaldos(Set<SaldoOuRendimento> saldos) {
+    public void setSaldos(List<SaldoOuRendimento> saldos) {
         this.saldos = saldos;
     }
 }

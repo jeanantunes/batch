@@ -5,6 +5,7 @@ import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,7 +22,7 @@ public class Cliente implements Serializable {
 
     @OneToMany(mappedBy = "titular", targetEntity = SaldoOuRendimento.class, fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private Set<SaldoOuRendimento> saldosRendimentos;
+    private List<SaldoOuRendimento> saldosRendimentos;
 
     @ManyToMany(mappedBy = "coTitulares", fetch = FetchType.LAZY)
     private Set<SaldoOuRendimento> saldosRendimentoCotitular;
@@ -53,11 +54,11 @@ public class Cliente implements Serializable {
         this.cpf = cpf;
     }
 
-    public Set<SaldoOuRendimento> getSaldosRendimentos() {
+    public List<SaldoOuRendimento> getSaldosRendimentos() {
         return saldosRendimentos;
     }
 
-    public void setSaldosRendimentos(Set<SaldoOuRendimento> saldosRendimentos) {
+    public void setSaldosRendimentos(List<SaldoOuRendimento> saldosRendimentos) {
         this.saldosRendimentos = saldosRendimentos;
     }
 
